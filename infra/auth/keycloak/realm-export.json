@@ -1,0 +1,5 @@
+{
+  "realm": "markenz",
+  "enabled": true,
+  "roles": {"realm": [{"name": "creator_admin"},{"name": "observer"}]}
+}

@@ -1,0 +1,14 @@
+[package]
+name = "markenz-deterministic"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# Workspace dependencies
+rand_chacha = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true }

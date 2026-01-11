@@ -1,0 +1,44 @@
+{
+  "vitals": {
+    "pulse": 70,
+    "bloodPressure": {"systolic": 110, "diastolic": 70},
+    "spO2": 99,
+    "temperature": 36.6,
+    "glucose": 80,
+    "energy": 95,
+    "fatigue": 0.15,
+    "arousal": 0.4,
+    "tension": 0.25
+  },
+  "physiology": {
+    "hydration": 0.85,
+    "wastePressure": {"bladder": 0.15, "bowel": 0.1},
+    "hygiene": 0.9,
+    "hormones": {
+      "cortisol": 0.25,
+      "oxytocin": 0.8,
+      "dopamine": 0.5,
+      "melatonin": 0.6,
+      "testosterone": 0.3,
+      "estrogen": 0.7
+    },
+    "metabolism": {
+      "glucose": 80,
+      "atp": 90,
+      "calorieIntake": 1800,
+      "calorieBurn": 1700
+    }
+  },
+  "appearance": {
+    "height": 165,
+    "weight": 60,
+    "build": "slender",
+    "hairColor": "blonde",
+    "eyeColor": "green"
+  },
+  "dna": {
+    "helix": null,
+    "generation": 0,
+    "traitsEncoded": false
+  }
+}

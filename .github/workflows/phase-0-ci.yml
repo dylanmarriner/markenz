@@ -1,0 +1,275 @@
+name: Phase 0 CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build Gate
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: markenz
+          POSTGRES_USER: markenz
+          POSTGRES_DB: markenz
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+    
+    - name: Install cargo-deny
+      run: cargo install cargo-deny --locked
+    
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Reality Lock Check
+      run: ./tools/ci/reality_lock.sh
+    
+    - name: Cargo Deny (Ban Check)
+      run: cargo deny check bans
+    
+    - name: Cargo Clippy Strict
+      run: cargo clippy --all-targets --all-features -- -D warnings
+    
+    - name: Build engine
+      run: cargo build --release --manifest-path apps/engine/Cargo.toml
+    
+    - name: Build server
+      run: |
+        cd apps/server
+        npm ci
+        npm run build
+    
+    - name: Build web
+      run: |
+        cd apps/web
+        npm ci
+        npm run build
+    
+    - name: Docker build
+      run: docker-compose build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          apps/engine/target/release/markenz-engine
+          apps/server/dist/
+          apps/web/build/
+
+  determinism:
+    name: Determinism Gate
+    runs-on: ubuntu-latest
+    needs: build
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: markenz
+          POSTGRES_USER: markenz
+          POSTGRES_DB: markenz
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Run determinism tests
+      run: |
+        cargo test --release determinism_tests
+        cargo test --release snapshot_equivalence_test
+        cargo test --release hash_chain_integrity_test
+    
+    - name: Run replay audit
+      run: |
+        python3 tools/audits/replay_audit.py --seed 1337 --events test_events.json
+    
+    - name: Verify hash stability
+      run: |
+        # Run same scenario twice and compare hashes
+        cargo run --release --bin test_determinism > run1.txt
+        cargo run --release --bin test_determinism > run2.txt
+        diff run1.txt run2.txt
+
+  authority-boundaries:
+    name: Authority Boundary Gate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check for agent-ID conditionals
+      run: |
+        # Forbidden: if (agent_id == "gem-d") or similar patterns
+        if rg "if.*agent_id.*==" crates/ --count; then
+          echo "❌ FAIL: Found agent-ID conditionals in code"
+          exit 1
+        fi
+        echo "✅ PASS: No agent-ID conditionals found"
+    
+    - name: Check for per-agent feature flags
+      run: |
+        # Forbidden: cfg flags per agent
+        if rg "cfg.*feature.*founder|cfg.*feature.*baseline" crates/ --count; then
+          echo "❌ FAIL: Found per-agent feature flags"
+          exit 1
+        fi
+        echo "✅ PASS: No per-agent feature flags found"
+    
+    - name: Check for nondeterministic APIs
+      run: |
+        # Forbidden: Math.random, Date.now, system time
+        if rg "Math\.random|Date\.now|SystemTime|UNIX_EPOCH" crates/ --count; then
+          echo "❌ FAIL: Found nondeterministic APIs"
+          exit 1
+        fi
+        echo "✅ PASS: No nondeterministic APIs found"
+    
+    - name: Check for TODO/FIXME/stub/mock
+      run: |
+        # Forbidden: placeholder implementations
+        if rg "TODO|FIXME|stub|mock|fake|placeholder" crates/ --count; then
+          echo "❌ FAIL: Found placeholder implementations"
+          exit 1
+        fi
+        echo "✅ PASS: No placeholder implementations found"
+
+  offline-functionality:
+    name: Offline Functionality Gate
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Start offline stack
+      run: |
+        # Block external network to test offline capability
+        sudo iptables -A OUTPUT -d 127.0.0.1/32 -j ACCEPT
+        sudo iptables -A OUTPUT -d 169.254.0.0/16 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --dport 5432 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --dport 8080 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --dport 3000 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --dport 3001 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --dport 3002 -j ACCEPT
+        sudo iptables -A OUTPUT -j REJECT
+        
+        # Start services
+        docker-compose up -d
+        sleep 30
+        
+        # Test Keycloak login works
+        curl -f http://localhost:8080/health || exit 1
+        
+        # Test engine ticks advance
+        timeout 60s docker-compose logs -f engine | grep -q "WORLD_HASH_CHECKPOINT" || exit 1
+        
+        echo "✅ PASS: System boots and runs offline"
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        sudo iptables -F
+        docker-compose down -v
+
+  event-log:
+    name: Event Log Gate
+    runs-on: ubuntu-latest
+    needs: build
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: markenz
+          POSTGRES_USER: markenz
+          POSTGRES_DB: markenz
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Test event log append-only
+      run: |
+        # Verify append-only rules are enforced
+        psql -h localhost -U markenz -d markenz -c "
+          INSERT INTO input_events (tick, source_agent_id, sequence, payload_json, hash) 
+          VALUES (1, 1, 1, '{}', '\\xdeadbeef');
+          -- This should work
+        "
+        
+        # Try UPDATE (should fail due to rule)
+        if psql -h localhost -U markenz -d markenz -c "
+          UPDATE input_events SET tick = 2 WHERE id = 1;
+        " 2>/dev/null; then
+          echo "❌ FAIL: UPDATE on input_events not blocked"
+          exit 1
+        fi
+        echo "✅ PASS: UPDATE on input_events blocked"
+        
+        # Try DELETE (should fail due to rule)
+        if psql -h localhost -U markenz -d markenz -c "
+          DELETE FROM input_events WHERE id = 1;
+        " 2>/dev/null; then
+          echo "❌ FAIL: DELETE on input_events not blocked"
+          exit 1
+        fi
+        echo "✅ PASS: DELETE on input_events blocked"
+    
+    - name: Test hash-chain verification
+      run: |
+        # Test hash chain endpoint
+        curl -f http://localhost:3000/api/audit/hash-chain/1 || exit 1
+        echo "✅ PASS: Hash-chain verification endpoint works"

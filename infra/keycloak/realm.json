@@ -1,0 +1,77 @@
+{
+  "id": "markenz",
+  "realm": "markenz",
+  "displayName": "Markenz",
+  "enabled": true,
+  "users": [
+    {
+      "username": "admin@test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "observer@test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_observer",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["observer"]
+    },
+    {
+      "username": "auditor@test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_auditor",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["auditor"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator with full access"
+      },
+      {
+        "name": "observer",
+        "description": "Read-only observer"
+      },
+      {
+        "name": "auditor",
+        "description": "Auditor with read access to logs"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "markenz-client",
+      "name": "Markenz Client",
+      "description": "Web client for Markenz application",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "markenz-secret",
+      "redirectUris": ["http://localhost:3000/callback"],
+      "webOrigins": ["http://localhost:3000"],
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true
+    }
+  ],
+  "keycloakVersion": "26.4.0"
+}

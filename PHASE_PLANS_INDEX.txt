@@ -1,0 +1,128 @@
+================================================================================
+MARKENZ GOVERNANCE PHASE PLANS - COMPLETE SPLIT
+================================================================================
+
+STATUS: ✓ COMPLETE AND EXECUTABLE
+
+All 10 governance phases (0-9) have been split from the master roadmap into
+individual executable phase plans. Each plan is complete, standalone, and
+contains all required sections, tests, and traceability.
+
+DIRECTORY: /docs/roadmap/phases/
+
+================================================================================
+PHASE PLAN FILES (11 total)
+================================================================================
+
+Phase 0:  MARKENZ_GOVERNANCE_PHASE_0_REPO_AND_EVENT_LOG_BASELINE.md
+          → Offline stack, immutable event sourcing, determinism kernel
+
+Phase 1:  MARKENZ_GOVERNANCE_PHASE_1_DETERMINISTIC_KERNEL_AND_REPLAY_HARNESS_LOCK.md
+          → Prove determinism formally; lock DeterministicRng and snapshot
+
+Phase 2:  MARKENZ_GOVERNANCE_PHASE_2_WORLD_REPRESENTATION_V1.md
+          → Deterministic spatial reality; terrain, entities, inventory
+
+Phase 3:  MARKENZ_GOVERNANCE_PHASE_3_EMBODIED_BIOLOGY_V1.md
+          → Causal physiology; enforce BioVeto for impossible actions
+
+Phase 4:  MARKENZ_GOVERNANCE_PHASE_4_OFFLINE_COGNITION_ENGINE.md
+          → Deterministic minds, planning, learning, language (no LLM)
+
+Phase 5:  MARKENZ_GOVERNANCE_PHASE_5_SOCIAL_DYNAMICS_AND_MULTI_AGENT_SCALING.md
+          → Emergent social systems; scale to dozens of agents
+
+Phase 6:  MARKENZ_GOVERNANCE_PHASE_6_GENETICS_AND_REPRODUCTION.md
+          → Population growth via deterministic genetics and reproduction
+
+Phase 7:  MARKENZ_GOVERNANCE_PHASE_7_GOVERNANCE_AND_ECONOMY.md
+          → Deterministic law enforcement, elections, markets, courts
+
+Phase 8:  MARKENZ_GOVERNANCE_PHASE_8_WEBGPU_RENDERER_AND_VISUALIZATION_UPGRADE.md
+          → Professional visualization (non-authoritative read-only)
+
+Phase 9:  MARKENZ_GOVERNANCE_PHASE_9_SECURITY_AND_INTEGRITY_HARDENING.md
+          → Encryption at rest, tamper-evident logging, auth hardening
+
+Phase 10+: MARKENZ_GOVERNANCE_PHASE_10_PLUS_FUTURE_GOVERNANCE_PLACEHOLDER.md
+          → Framework for future phases (via law proposal + voting)
+
+README:   README.md
+          → Navigation and manifest for all phase plans
+
+COMPLETION REPORT: /PHASE_PLANS_SPLIT_COMPLETE.md
+          → Detailed summary of split execution
+
+================================================================================
+CONTENT PRESERVATION
+================================================================================
+
+✓ Zero Loss         — All requirements preserved from master roadmap
+✓ No Reordering     — Phases in exact sequence (0-1-2-...-9)
+✓ No Merging        — Each phase is standalone; no collapsing
+✓ No Relaxation     — All prohibitions and constraints preserved
+✓ Full Traceability — Each section maps to master roadmap source
+
+================================================================================
+STRUCTURE COMPLIANCE
+================================================================================
+
+Every phase plan contains (in exact order):
+
+ 1. Phase Objective
+ 2. Governance Domains In Scope
+ 3. Systems & Modules Touched
+ 4. Event Types (MANDATORY; no placeholders)
+ 5. Determinism Guarantees
+ 6. Enforcement Rules (BioVeto, PhysicsValidate, PolicyValidate)
+ 7. Audit & Replay Requirements
+ 8. Tests (MANDATORY) — executable requirements
+ 9. CI / Compilation Gates
+10. Explicit Prohibitions
+11. Phase Completion Criteria (checkbox list)
+12. Authority Statement (binding)
+13. Traceability (section → source mapping)
+
+================================================================================
+EXECUTION READINESS
+================================================================================
+
+✓ Phase 0 is bootstrap (no dependencies)
+✓ Each phase has explicit 'depends_on' field
+✓ Completion criteria define exit conditions
+✓ CI gates provide checkpoints
+✓ Tests are executable/automated
+✓ All 8 Constitutional Principles always active (never weakened)
+✓ Determinism guarantees are cumulative (never lost)
+
+================================================================================
+KEY INVARIANTS
+================================================================================
+
+→ Authority Law (Rust engine is ONLY world-state mutator) — INVIOLABLE
+→ Determinism Law (same seed + events → same hashes) — CUMULATIVE
+→ Transparency Law (everything observable/logged) — MANDATORY
+→ Offline-First Law (no external network in authority path) — MANDATORY
+→ Agent Parity Law (all agents identical except identity) — INVIOLABLE
+→ Founder Amplification Law (bounded, non-inherited) — ENFORCED
+→ No-Mock/Stub Law (no placeholders in tracked source) — CI GATED
+→ Self-Evolution Law (state only, never code) — ENFORCED
+
+================================================================================
+HAND-OFF TO WINDSURF
+================================================================================
+
+These phase plans are ready for direct Windsurf execution:
+
+1. Start with Phase 0 (bootstrap; no dependencies)
+2. Execute each phase in order (0→1→2→...→9)
+3. Verify each phase's CI gates pass before advancing
+4. Run determinism tests continuously (must never fail)
+5. Phase 10+ awaits governance approval (law proposal + voting)
+
+================================================================================
+GENERATED: 2026-01-11
+AUTHORITY: AMP / Antigravity / KAIZA-MCP
+SOURCE: MARKENZ_GOVERNANCE_MASTER_ROADMAP.md
+STATUS: BINDING AND EXECUTABLE
+================================================================================

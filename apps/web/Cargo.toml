@@ -1,0 +1,22 @@
+[package]
+name = "markenz-web"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# React and TypeScript
+react = "^18.2.0"
+react-dom = "^18.2.0"
+typescript = "^5.2.2"
+
+# Build tools
+vite = "^5.0.8"
+@vitejs/plugin-react = "^4.2.1"
+
+# Linting
+eslint = "^8.55.0"
+@typescript-eslint/eslint-plugin = "^6.14.0"
+@typescript-eslint/parser = "^6.14.0"
+eslint-plugin-react-hooks = "^4.6.0"
+eslint-plugin-react-refresh = "^0.4.5"

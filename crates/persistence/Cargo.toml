@@ -1,0 +1,24 @@
+[package]
+name = "markenz-persistence"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# Workspace dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+blake3 = { workspace = true }
+bincode = { workspace = true }
+hex = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tokio-postgres = "0.7"
+
+# Local crates
+markenz-events = { path = "../events" }
+markenz-world = { path = "../world" }
+rng = { path = "../rng" }

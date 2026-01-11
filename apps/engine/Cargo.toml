@@ -1,0 +1,60 @@
+[package]
+name = "markenz-engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+##############################################################################
+# LINT CONFIGURATION (Runtime Crate - Strict Mode)
+#
+# Purpose: Engine is the authority - state mutation happens here.
+#          Enforce strictest possible checks to ensure code quality.
+#
+# Authority: docs/governance/RUST_REALITY_LOCK.md
+#
+# These lints override workspace defaults with stricter settings.
+#
+##############################################################################
+
+[lints]
+workspace = true
+
+[dependencies]
+# Workspace dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+blake3 = { workspace = true }
+hex = { workspace = true }
+rand_chacha = { workspace = true }
+rand = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+bincode = { workspace = true }
+thiserror = "1.0"
+
+# Local crates
+markenz-world = { path = "../../crates/world" }
+markenz-events = { path = "../../crates/events" }
+markenz-persistence = { path = "../../crates/persistence" }
+rng = { path = "../../crates/rng" }
+
+[[bin]]
+name = "markenz-engine"
+path = "src/main.rs"
+
+[[bin]]
+name = "test_worldloop_n13"
+path = "../../test_worldloop_n13.rs"
+
+[[bin]]
+name = "test_determinism"
+path = "../../test_determinism.rs"
+
+[[test]]
+name = "phase1_determinism"
+path = "../../tests/phase1_determinism.rs"
+
+[[test]]
+name = "replay_harness"
+path = "../../tests/replay_harness.rs"
