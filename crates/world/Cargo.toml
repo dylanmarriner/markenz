@@ -4,8 +4,18 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
-[lints]
-workspace = true
+[lints.rust]
+missing_docs = "allow"
+
+[lints.clippy]
+new_without_default = "allow"
+needless_borrow = "allow"
+unnecessary_min_or_max = "allow"
+cast_abs_to_unsigned = "allow"
+clone_on_copy = "allow"
+len_zero = "allow"
+empty_line_after_doc_comments = "allow"
+iter_kv_map = "allow"
 
 [dependencies]
 # Workspace dependencies

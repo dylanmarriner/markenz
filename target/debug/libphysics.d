@@ -1,0 +1,1 @@
+/media/linnyux/development3/developing/markenz/target/debug/libphysics.rlib: /media/linnyux/development3/developing/markenz/crates/physics/src/collision.rs /media/linnyux/development3/developing/markenz/crates/physics/src/lib.rs

@@ -1,3 +1,15 @@
+//! # Phase 1 Replay Harness Validation
+//! 
+//! This module implements comprehensive replay testing for Phase 1 determinism.
+//! It validates snapshot creation and loading mechanisms, tests event log replay
+//! with hash verification, and ensures replay equivalence across different scenarios.
+//! 
+//! ## Test Coverage
+//! - Snapshot creation and loading
+//! - Event log replay with hash verification  
+//! - Replay equivalence across different scenarios
+//! - Deterministic behavior validation
+
 /**
  * File: tests/replay_harness.rs
  * 
@@ -52,7 +64,7 @@ fn test_snapshot_creation_and_integrity() -> Result<(), String> {
     
     // Add some events to create interesting state
     let mut input_events = BTreeMap::new();
-    input_events.insert(10, vec![
+    let _ = input_events.insert(10, vec![
         InputEvent {
             tick: 10,
             source_agent_id: 1,
@@ -63,7 +75,7 @@ fn test_snapshot_creation_and_integrity() -> Result<(), String> {
         }
     ]);
     
-    input_events.insert(25, vec![
+    let _ = input_events.insert(25, vec![
         InputEvent {
             tick: 25,
             source_agent_id: 2,
@@ -101,7 +113,7 @@ fn test_snapshot_replay_identical_results() -> Result<(), String> {
     // Create input events spanning the entire run
     let mut input_events = BTreeMap::new();
     for tick in [15, 30, 45, 60, 75, 90] {
-        input_events.insert(tick, vec![
+        let _ = input_events.insert(tick, vec![
             InputEvent {
                 tick,
                 source_agent_id: 1,
@@ -206,7 +218,7 @@ fn test_event_order_preservation() -> Result<(), String> {
     let mut input_events = BTreeMap::new();
     
     // Multiple events in same tick (must be processed in sequence order)
-    input_events.insert(10, vec![
+    let _ = input_events.insert(10, vec![
         InputEvent {
             tick: 10,
             source_agent_id: 1,
@@ -234,7 +246,7 @@ fn test_event_order_preservation() -> Result<(), String> {
     ]);
     
     // Events across different ticks
-    input_events.insert(20, vec![
+    let _ = input_events.insert(20, vec![
         InputEvent {
             tick: 20,
             source_agent_id: 1,
@@ -305,7 +317,7 @@ fn test_audit_trail_preservation() -> Result<(), String> {
     // Create events that trigger RNG usage
     let mut input_events = BTreeMap::new();
     for tick in [5, 10, 15, 20] {
-        input_events.insert(tick, vec![
+        let _ = input_events.insert(tick, vec![
             InputEvent {
                 tick,
                 source_agent_id: 1,

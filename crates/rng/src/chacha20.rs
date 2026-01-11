@@ -25,7 +25,7 @@ impl ChaCha20Rng {
         }).collect();
         
         let key: [u32; 8] = match key_bytes.into_inner() {
-            Ok(bytes) => bytes.map(|bytes| u32::from_le_bytes(bytes)),
+            Ok(bytes) => bytes.map(u32::from_le_bytes),
             Err(_) => [0u32; 8],
         };
         
@@ -36,7 +36,7 @@ impl ChaCha20Rng {
         }).collect();
         
         let nonce: [u32; 3] = match nonce_bytes.into_inner() {
-            Ok(bytes) => bytes.map(|bytes| u32::from_le_bytes(bytes)),
+            Ok(bytes) => bytes.map(u32::from_le_bytes),
             Err(_) => [0u32; 3],
         };
         

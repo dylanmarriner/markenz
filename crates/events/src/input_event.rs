@@ -61,25 +61,41 @@ pub enum InputEventPayload {
     /// * `x` - X coordinate in world space
     /// * `y` - Y coordinate in world space  
     /// * `z` - Z coordinate in world space
-    Move { x: f32, y: f32, z: f32 },
+    Move { 
+        /// X coordinate in world space
+        x: f32, 
+        /// Y coordinate in world space
+        y: f32, 
+        /// Z coordinate in world space
+        z: f32 
+    },
     
     /// Chat/message event
     /// 
     /// # Fields
     /// * `text` - The message content
-    Chat { text: String },
+    Chat { 
+        /// The message content
+        text: String 
+    },
     
     /// Resource gathering event
     /// 
     /// # Fields
     /// * `resource_type` - Type of resource being gathered
-    Gather { resource_type: String },
+    Gather { 
+        /// Type of resource being gathered
+        resource_type: String 
+    },
     
     /// Crafting event
     /// 
     /// # Fields
     /// * `recipe_id` - ID of the recipe being crafted
-    Craft { recipe_id: u64 },
+    Craft { 
+        /// ID of the recipe being crafted
+        recipe_id: u64 
+    },
     
     /// Mining event
     Mine,
@@ -88,7 +104,10 @@ pub enum InputEventPayload {
     /// 
     /// # Fields
     /// * `building_type` - Type of building being constructed
-    Build { building_type: String },
+    Build { 
+        /// Type of building being constructed
+        building_type: String 
+    },
     
     /// System boot event
     BootEvent,
@@ -127,11 +146,9 @@ impl InputEvent {
             return Err("Event hash cannot be zero".to_string());
         }
         
-        // Genesis event (BootEvent) must have zero prev_hash
-        if matches!(self.payload, InputEventPayload::BootEvent) {
-            if self.prev_hash != [0u8; 32] {
-                return Err("BootEvent must have zero prev_hash".to_string());
-            }
+        // Genesis event (BootEvent) must have zero prev_hash (first event in chain)
+        if matches!(self.payload, InputEventPayload::BootEvent) && self.prev_hash != [0u8; 32] {
+            return Err("BootEvent must have zero prev_hash".to_string());
         }
         
         Ok(())
@@ -141,7 +158,7 @@ impl InputEvent {
     /// 
     /// Hash includes all event fields to ensure immutability.
     /// Any modification to event fields will break the hash-chain.
-    pub fn compute_hash(&self) -> [u8; 32] {
+    pub fn compute_hash(&self) -> Result<[u8; 32], String> {
         let mut hasher = blake3::Hasher::new();
         
         // Hash all fields in deterministic order
@@ -151,13 +168,13 @@ impl InputEvent {
         
         // Hash payload using canonical serialization
         let payload_bytes = serde_json::to_vec(&self.payload)
-            .expect("Failed to serialize InputEvent payload for hashing");
+            .map_err(|_| "Failed to serialize InputEvent payload for hashing")?;
         let _ = hasher.update(&payload_bytes);
         
         // Include previous hash for chain linkage
         let _ = hasher.update(&self.prev_hash);
         
-        hasher.finalize().into()
+        Ok(hasher.finalize().into())
     }
     
     /// Creates new InputEvent with computed hash
@@ -170,7 +187,7 @@ impl InputEvent {
         sequence: u64,
         payload: InputEventPayload,
         prev_hash: [u8; 32],
-    ) -> Self {
+    ) -> Result<Self, String> {
         let mut event = Self {
             tick,
             source_agent_id,
@@ -181,9 +198,9 @@ impl InputEvent {
         };
         
         // Compute deterministic hash
-        event.hash = event.compute_hash();
+        event.hash = event.compute_hash().map_err(|_| "Failed to compute event hash")?;
         
-        event
+        Ok(event)
     }
     
     /// Verifies that this event properly links to previous hash

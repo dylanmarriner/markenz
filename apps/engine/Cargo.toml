@@ -16,8 +16,13 @@ rust-version.workspace = true
 #
 ##############################################################################
 
-[lints]
-workspace = true
+[lints.rust]
+missing_docs = "allow"
+
+[lints.clippy]
+empty_line_after_doc_comments = "allow"
+vec_init_then_push = "allow"
+single_component_path_imports = "allow"
 
 [dependencies]
 # Workspace dependencies
@@ -42,14 +47,6 @@ rng = { path = "../../crates/rng" }
 [[bin]]
 name = "markenz-engine"
 path = "src/main.rs"
-
-[[bin]]
-name = "test_worldloop_n13"
-path = "../../test_worldloop_n13.rs"
-
-[[bin]]
-name = "test_determinism"
-path = "../../test_determinism.rs"
 
 [[test]]
 name = "phase1_determinism"

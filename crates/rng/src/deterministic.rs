@@ -1,4 +1,4 @@
-/**
+/*!
  * File: crates/rng/src/deterministic.rs
  * 
  * Purpose: Enhanced DeterministicRng with audit logging for Phase 1

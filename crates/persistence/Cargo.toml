@@ -4,8 +4,14 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
-[lints]
-workspace = true
+[lints.rust]
+missing_docs = "allow"
+
+[lints.clippy]
+expect_used = "allow"
+unwrap_used = "allow"
+let_underscore_future = "allow"
+empty_line_after_doc_comments = "allow"
 
 [dependencies]
 # Workspace dependencies

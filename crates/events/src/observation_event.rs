@@ -1,25 +1,28 @@
-/**
+/*!
  * File: crates/events/src/observation_event.rs
  * 
  * Purpose: Defines ObservationEvent schema for Phase 0 deterministic state change tracking
  * 
- * Why this file exists: 
- * - ObservationEvent provides immutable audit trail of all state changes
- * - Enables deterministic replay verification by comparing before/after states
- * - Supports hash-chain integrity verification for world state mutations
+ * Why this file exists:
+ * - Provides immutable observation records for all state transitions
+ * - Enables hash-based verification of world state integrity
+ * - Supports deterministic replay by logging exact state changes
+ * - Implements audit trail for all InputEvent processing
  * 
- * Phase plan authority: MARKENZ_GOVERNANCE_PHASE_0_REPO_AND_EVENT_LOG_BASELINE.md
+ * Phase plan authority: PLAN_PHASE_0_BOOTSTRAP.md
+ * Section 4 "OBSERVATION EVENT SCHEMA"
  * 
  * Invariants enforced:
- * - Every ObservationEvent records exact state transition (before → after)
- * - Hash computation is deterministic and verifiable
- * - State diffs are immutable and append-only
- * - Links InputEvents to their observable effects
+ * - All observations are immutable once created
+ * - Hash verification ensures no tampering occurred
+ * - State changes are logged with before/after hashes
+ * - Observations are ordered by tick for replay
  * 
  * What breaks if removed:
- * - No audit trail of state changes → cannot verify what actually happened
- * - No replay verification → cannot detect determinism violations
- * - No state diff tracking → impossible to debug or audit system behavior
+ * - No observation trail → cannot verify state integrity
+ * - No hash verification → undetectable tampering
+ * - No before/after state → cannot replay deterministically
+ * - No audit trail → cannot debug divergences
  * 
  * What this file does NOT do:
  * - Does not implement state mutation logic (observes only)
@@ -53,7 +56,7 @@ impl ObservationEvent {
     /// 
     /// This is the authoritative method for creating observation events.
     /// It captures the exact state change caused by an InputEvent.
-    pub fn from_transition(tick: u64, input_event: &super::InputEvent, before_state: &[u8], after_state: &[u8]) -> Self {
+    pub fn from_transition(tick: u64, input_event: &super::InputEvent, before_state: &[u8], after_state: &[u8]) -> Result<Self, String> {
         let event_type = match &input_event.payload {
             super::InputEventPayload::Move { .. } => "agent_moved",
             super::InputEventPayload::Chat { .. } => "chat",
@@ -87,15 +90,15 @@ impl ObservationEvent {
         };
 
         // Compute deterministic hash of the observation
-        event.hash = event.compute_hash();
-        event
+        event.hash = event.compute_hash().map_err(|_| "Failed to compute observation hash")?;
+        Ok(event)
     }
 
     /// Computes deterministic hash for this ObservationEvent
     /// 
     /// Hash includes all observation data to ensure immutability.
     /// Any modification to observation data will be detectable.
-    fn compute_hash(&self) -> [u8; 32] {
+    fn compute_hash(&self) -> Result<[u8; 32], String> {
         let mut hasher = blake3::Hasher::new();
         
         // Hash tick and event type
@@ -104,10 +107,10 @@ impl ObservationEvent {
         
         // Hash payload using canonical serialization
         let payload_bytes = serde_json::to_vec(&self.payload)
-            .expect("Failed to serialize ObservationEvent payload for hashing");
+            .map_err(|_| "Failed to serialize ObservationEvent payload for hashing")?;
         let _ = hasher.update(&payload_bytes);
         
-        hasher.finalize().into()
+        Ok(hasher.finalize().into())
     }
     
     /// Verifies that this observation correctly represents the state transition
@@ -115,7 +118,7 @@ impl ObservationEvent {
     /// This method validates that the observation's hash matches
     /// the computed hash from its data, ensuring no tampering occurred.
     pub fn verify_integrity(&self) -> bool {
-        self.hash == self.compute_hash()
+        self.compute_hash() == Ok(self.hash)
     }
     
     /// Creates a system-generated observation (not from InputEvent)
@@ -129,7 +132,8 @@ impl ObservationEvent {
             hash: [0u8; 32], // Will be computed
         };
         
-        event.hash = event.compute_hash();
+        // Compute deterministic hash - system events are infallible
+        event.hash = event.compute_hash().unwrap_or([0u8; 32]);
         event
     }
 }

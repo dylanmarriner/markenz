@@ -1,0 +1,1 @@
+/media/linnyux/development3/developing/markenz/target/debug/libmarkenz_events.rlib: /media/linnyux/development3/developing/markenz/crates/events/src/input_event.rs /media/linnyux/development3/developing/markenz/crates/events/src/lib.rs /media/linnyux/development3/developing/markenz/crates/events/src/observation_event.rs

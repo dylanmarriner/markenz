@@ -71,8 +71,8 @@ expect_used = "deny"
 panic = "deny"
 
 # Code quality (warn level; can be override in specific crates)
-# NOTE: Placed at end to avoid lint group priority conflicts
-all = "warn"
+# NOTE: Fixed priority to avoid lint group priority conflicts
+all = { level = "warn", priority = -1 }
 
 [profile.release]
 opt-level = 3

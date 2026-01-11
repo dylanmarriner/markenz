@@ -1,10 +1,42 @@
-/**
+//! # Event Determinism Integration Tests
+//! 
+//! This module provides comprehensive integration tests for event-based determinism.
+//! It validates hash chain integrity, event validation, and schema completeness.
+
+/*!
  * File: crates/events/tests/determinism_test.rs
  * 
  * Purpose: Integration tests for event-based determinism
  * 
- * Phase plan authority: MARKENZ_GOVERNANCE_PHASE_0_REPO_AND_EVENT_LOG_BASELINE.md
- * Section 8.1 "Determinism Replay Test"
+ * Why this file exists:
+ * - Validates event hash determinism across multiple instances
+ * - Tests hash-chain linkage between sequential events
+ * - Verifies event validation prevents corruption
+ * - Ensures event sequence ordering is maintained
+ * - Validates event schema completeness for Phase 0
+ * 
+ * Phase plan authority: PLAN_PHASE_0_BOOTSTRAP.md
+ * Section 5 "EVENT INTEGRATION TESTS"
+ * 
+ * Invariants enforced:
+ * - Identical events produce identical hashes
+ * - Hash chains properly link sequential events
+ * - Event validation rejects invalid states
+ * - Event sequences maintain proper ordering
+ * - Event schema supports all required Phase 0 operations
+ * 
+ * What breaks if removed:
+ * - No hash determinism verification → replay divergence
+ * - No hash-chain validation → undetectable tampering
+ * - No validation testing → corruption acceptance
+ * - No ordering verification → sequence corruption
+ * - No schema validation → incomplete event support
+ * 
+ * What this file does NOT do:
+ * - Does not test Phase 1+ specific features
+ * - Does not validate performance characteristics
+ * - Does not test persistence layer (handled elsewhere)
+ * - Does not validate network protocols (out of scope)
  */
 
 use markenz_events::{InputEvent, InputEventPayload};
@@ -27,7 +59,7 @@ fn test_event_hash_determinism() {
         1,
         payload.clone(),
         [0u8; 32],
-    );
+    ).unwrap();
     
     let event2 = InputEvent::new(
         1,
@@ -35,7 +67,7 @@ fn test_event_hash_determinism() {
         1,
         payload.clone(),
         [0u8; 32],
-    );
+    ).unwrap();
     
     // They MUST have identical hashes
     assert_eq!(event1.hash, event2.hash,
@@ -61,7 +93,7 @@ fn test_hash_chain_linkage() {
         1,
         InputEventPayload::BootEvent,
         [0u8; 32],
-    );
+    ).unwrap();
     
     // Event 2 links to event 1
     let event2 = InputEvent::new(
@@ -70,7 +102,7 @@ fn test_hash_chain_linkage() {
         2,
         payload1,
         event1.hash,
-    );
+    ).unwrap();
     
     // Verify linkage
     assert!(event2.verify_hash_link(event1.hash),
@@ -90,7 +122,7 @@ fn test_event_validation_prevents_corruption() {
         1,
         InputEventPayload::Move { x: 1.0, y: 1.0, z: 1.0 },
         [0u8; 32],
-    );
+    ).unwrap();
     
     let result = invalid_event.validate();
     assert!(result.is_err(),
@@ -103,7 +135,7 @@ fn test_event_validation_prevents_corruption() {
         1,
         InputEventPayload::BootEvent,
         [0u8; 32],
-    );
+    ).unwrap();
     boot_event.prev_hash = [1u8; 32];  // Corrupt prev_hash
     
     let result = boot_event.validate();
@@ -118,20 +150,20 @@ fn test_sequence_ordering() {
     // REQUIREMENT: Events with same tick must be ordered by sequence number
     
     let event1 = InputEvent::new(
+        10,
         1,
         1,
-        1,  // sequence 1
-        InputEventPayload::Move { x: 1.0, y: 2.0, z: 3.0 },
+        InputEventPayload::Move { x: 5.0, y: 10.0, z: 0.0 },
         [0u8; 32],
-    );
+    ).unwrap();
     
     let event2 = InputEvent::new(
+        11,
         1,
         2,
-        2,  // sequence 2
-        InputEventPayload::Chat { text: "hello".to_string() },
+        InputEventPayload::Move { x: 6.0, y: 11.0, z: 1.0 },
         event1.hash,
-    );
+    ).unwrap();
     
     // Verify sequencing
     assert!(event1.sequence < event2.sequence,

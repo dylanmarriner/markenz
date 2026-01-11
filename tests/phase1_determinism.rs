@@ -1,3 +1,15 @@
+//! # Phase 1 Determinism Validation Tests
+//! 
+//! This module implements comprehensive determinism validation for Phase 1.
+//! It tests fixed seed reproducibility, snapshot replay equivalence,
+//! hash chain integrity, and RNG chaos stability.
+//! 
+//! ## Test Coverage
+//! - TEST-DET-001: Fixed Seed Reproducibility
+//! - TEST-SNAPSHOT-EQ-001: Snapshot Replay Equivalence  
+//! - TEST-HASH-CHAIN-001: Hash Chain Integrity
+//! - TEST-RNG-001: RNG Chaos Stability
+
 /**
  * File: tests/phase1_determinism.rs
  * 
@@ -48,7 +60,7 @@ fn test_determinism_fixed_seed() -> Result<(), String> {
     
     // Create identical input events for all runs
     let mut input_events = BTreeMap::new();
-    input_events.insert(5, vec![
+    let _ = input_events.insert(5, vec![
         InputEvent {
             tick: 5,
             source_agent_id: 1,
@@ -58,7 +70,7 @@ fn test_determinism_fixed_seed() -> Result<(), String> {
             prev_hash: [0u8; 32],
         }
     ]);
-    input_events.insert(10, vec![
+    let _ = input_events.insert(10, vec![
         InputEvent {
             tick: 10,
             source_agent_id: 2,
@@ -120,7 +132,7 @@ fn test_snapshot_replay_equivalence() -> Result<(), String> {
     // Create input events spanning the full run
     let mut input_events = BTreeMap::new();
     for tick in [20, 50, 80, 120, 150, 180] {
-        input_events.insert(tick, vec![
+        let _ = input_events.insert(tick, vec![
             InputEvent {
                 tick,
                 source_agent_id: 1,

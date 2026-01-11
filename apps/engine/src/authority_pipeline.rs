@@ -94,7 +94,7 @@ pub fn process_tick(
         universe.state_hash = new_hash;
         
         // Pass 7: Observation Emission
-        let obs = ObservationEvent::from_transition(universe.tick, &event, &transition.before_state, &transition.after_state);
+        let obs = ObservationEvent::from_transition(universe.tick, &event, &transition.before_state, &transition.after_state)?;
         observations.push(obs);
         
         // Pass 8: Persistence (async - handled by caller)
