@@ -1,0 +1,31 @@
+[package]
+name = "markenz-biology"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lints.rust]
+missing_docs = "deny"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+todo = "deny"
+unimplemented = "deny"
+panic = "deny"
+
+[dependencies]
+# Workspace dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+blake3 = { workspace = true }
+tracing = { workspace = true }
+rand = { workspace = true }
+rand_chacha = { workspace = true }
+
+# Local dependencies
+rng = { path = "../rng" }
+markenz-events = { path = "../events" }
+
+[dev-dependencies]
+tokio-test = "0.4"

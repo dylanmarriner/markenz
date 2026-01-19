@@ -1,0 +1,90 @@
+%% Title: Markenz System Architecture Overview
+%% Version: 1.0
+%% Author: Architecture Team
+%% Date: 2026-01-19
+%% Description: High-level system architecture showing major components and interactions
+
+graph TD
+    %% User Interface Layer
+    UI[User Interface] --> API[API Gateway]
+    
+    %% API Gateway
+    API --> AUTH[Authentication Service]
+    API --> RATE[Rate Limiting]
+    API --> LB[Load Balancer]
+    
+    %% Application Layer
+    LB --> WEB[Web Server]
+    LB --> ENGINE[Simulation Engine]
+    LB --> BIO[Biology Engine]
+    LB --> GOV[Governance Engine]
+    
+    %% Core Simulation Components
+    ENGINE --> DET[Deterministic Core]
+    ENGINE --> EVENT[Event System]
+    ENGINE --> STATE[State Management]
+    
+    %% Biological Simulation
+    BIO --> PHYS[Physiology Engine]
+    BIO --> NEURAL[Neural System]
+    BIO --> HORMONE[Hormonal System]
+    
+    %% Governance Layer
+    GOV --> RULES[Rule Engine]
+    GOV --> COMPLIANCE[Compliance Checker]
+    GOV --> AUDIT[Audit Logger]
+    
+    %% Data Layer
+    STATE --> DB[(Database)]
+    EVENT --> DB
+    RULES --> DB
+    AUDIT --> DB
+    
+    %% External Systems
+    DB --> BACKUP[Backup System]
+    DB --> MONITOR[Monitoring System]
+    
+    %% Styling
+    style UI fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style API fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style ENGINE fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    style BIO fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style GOV fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    style DB fill:#f5f5f5,stroke:#424242,stroke-width:2px
+    
+    %% Annotations
+    subgraph "User Interface Layer"
+        UI
+    end
+    
+    subgraph "Gateway & Security"
+        API
+        AUTH
+        RATE
+        LB
+    end
+    
+    subgraph "Application Services"
+        WEB
+        ENGINE
+        BIO
+        GOV
+    end
+    
+    subgraph "Core Simulation"
+        DET
+        EVENT
+        STATE
+        PHYS
+        NEURAL
+        HORMONE
+        RULES
+        COMPLIANCE
+        AUDIT
+    end
+    
+    subgraph "Data & Infrastructure"
+        DB
+        BACKUP
+        MONITOR
+    end

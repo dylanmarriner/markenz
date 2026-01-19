@@ -1,0 +1,110 @@
+%% Title: Biological Agent Architecture
+%% Version: 1.0
+%% Author: Biology Team
+%% Date: 2026-01-19
+%% Description: Architecture of biological agent simulation showing physiological drives and decision-making
+
+graph TD
+    %% Environmental Input
+    ENV[Environment] --> SENSORY[Sensory Processing]
+    
+    %% Sensory Systems
+    SENSORY --> VISUAL[Visual Processing]
+    SENSORY --> AUDITORY[Auditory Processing]
+    SENSORY --> PROPRIO[Proprioception]
+    SENSORY --> INTERO[Interoception]
+    
+    %% Physiological State
+    PHYS[Physiology] --> HUNGER[Hunger Drive]
+    PHYS --> FATIGUE[Fatigue Drive]
+    PHYS --> THIRST[Thirst Drive]
+    PHYS --> SOCIAL[Social Drive]
+    PHYS --> SAFETY[Safety Drive]
+    
+    %% Hormonal System
+    ENDOCRINE[Endocrine System] --> CORTISOL[Cortisol]
+    ENDOCRINE --> DOPAMINE[Dopamine]
+    ENDOCRINE --> SEROTONIN[Serotonin]
+    ENDOCRINE --> OXYTOCIN[Oxytocin]
+    
+    %% Neural Processing
+    NERVOUS[Nervous System] --> PERCEIVE[Perception]
+    NERVOUS --> MOTIVATE[Motivation Integration]
+    NERVOUS --> PLAN[Action Planning]
+    NERVOUS --> EXECUTE[Action Execution]
+    
+    %% Decision Flow
+    INTERO --> MOTIVATE
+    HUNGER --> MOTIVATE
+    FATIGUE --> MOTIVATE
+    THIRST --> MOTIVATE
+    SOCIAL --> MOTIVATE
+    SAFETY --> MOTIVATE
+    
+    CORTISOL --> MOTIVATE
+    DOPAMINE --> MOTIVATE
+    SEROTONIN --> MOTIVATE
+    OXYTOCIN --> MOTIVATE
+    
+    VISUAL --> PERCEIVE
+    AUDITORY --> PERCEIVE
+    PROPRIO --> PERCEIVE
+    
+    PERCEIVE --> MOTIVATE
+    MOTIVATE --> PLAN
+    PLAN --> EXECUTE
+    
+    %% Action Output
+    EXECUTE --> ACTION[Agent Actions]
+    ACTION --> ENV
+    
+    %% Internal State Updates
+    EXECUTE --> PHYS
+    EXECUTE --> ENDOCRINE
+    
+    %% Styling
+    style ENV fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    style SENSORY fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style PHYS fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ENDOCRINE fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    style NERVOUS fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    style ACTION fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    
+    %% Annotations
+    subgraph "Environmental Interface"
+        ENV
+        SENSORY
+        VISUAL
+        AUDITORY
+        PROPRIO
+        INTERO
+    end
+    
+    subgraph "Physiological Drives"
+        PHYS
+        HUNGER
+        FATIGUE
+        THIRST
+        SOCIAL
+        SAFETY
+    end
+    
+    subgraph "Hormonal Modulation"
+        ENDOCRINE
+        CORTISOL
+        DOPAMINE
+        SEROTONIN
+        OXYTOCIN
+    end
+    
+    subgraph "Neural Processing"
+        NERVOUS
+        PERCEIVE
+        MOTIVATE
+        PLAN
+        EXECUTE
+    end
+    
+    subgraph "Behavioral Output"
+        ACTION
+    end

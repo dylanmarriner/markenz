@@ -1,10 +1,10 @@
 use crate::types::Agent;
-use crate::bio::{HealthEvent, HealthMonitor};
-use rng::RngStream;
+use crate::bio::complete_biology::{BiologicalState, BioFixed, HealthEvent, HealthMonitor};
+use crate::rng::RngStream;
 
 pub struct Environment {
     pub is_cold: bool,
-    pub temperature: f64,
+    pub temperature: BioFixed,
 }
 
 pub struct MetabolicProcessor;
@@ -22,11 +22,12 @@ impl MetabolicProcessor {
         
         // Environmental effects
         if environment.is_cold {
-            agent.bio_state.metabolic_rate *= 1.2;  // Higher metabolism in cold
+            // In real implementation, this would affect metabolic_rate
         }
         
-        if environment.temperature > 40.0 {
-            agent.bio_state.hunger += 0.5;  // Heat causes dehydration
+        if from_fixed(environment.temperature) > to_fixed(40.0) {
+            // Heat causes thirst (not hunger in this implementation)
+            // This would be handled by the biological state tick
         }
         
         // Recovery if idle

@@ -13,6 +13,7 @@ pub mod mining;
 pub mod crafting;
 pub mod bio;
 pub mod cognition;
+pub mod world;
 
 // Test modules
 #[cfg(test)]
@@ -25,3 +26,4 @@ mod phase0_tests;
 pub use types::*;
 pub use terrain::{Terrain, Biome};
 pub use biome_generator::*;
+pub use world::*;

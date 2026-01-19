@@ -1,0 +1,15 @@
+graph TD
+    User[User / Observer] -->|Read Only| API[Access API]
+    Admin[Administrator] -->|Miracle Transaction| Input[Input Log]
+    
+    subgraph Simulation Node
+        Input -->|Events| App[Application Layer]
+        App -->|Validate| Gov[Governance Engine]
+        Gov -->|Enforce| Bio[Biological Layer]
+        Bio -->|Interaction| Phys[Physics/Substrate]
+        Phys -->|Update| State[State DB]
+    end
+    
+    State -->|Hash| Ledger[Merkle Tree]
+    State -->|Snapshot| Storage[Cold Storage]
+    API -->|Query| State
